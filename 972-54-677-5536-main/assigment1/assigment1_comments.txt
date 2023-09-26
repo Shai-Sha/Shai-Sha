@@ -1,0 +1,9 @@
+Mostly good work.  You didn't complete perceptron.py, so here are my comments on 
+your regression code:
+
+    1) Try to keep pathnames as simple as possible, so they will work on different
+       operating systems: use 'assign1_data.txt' instead of r'.\assign1_data.txt'.
+
+    2) For the final regression test (25/50/75) you should get 96% for all three
+       conditions.  I've included my solution (levy_regression.py) if you'd like
+       to compare it to yours.
