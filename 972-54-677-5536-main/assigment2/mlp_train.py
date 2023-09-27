@@ -5,22 +5,8 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
+from mlp import BaseClassifier
 
-# For reproducability
-torch.manual_seed(0)
-
-class BaseClassifier(nn.Module):
-  def __init__(self, in_dim, feature_dim, out_dim):
-    super(BaseClassifier, self).__init__()
-    self.classifier = nn.Sequential(
-        nn.Linear(in_dim, feature_dim, bias=True),
-        nn.ReLU(),
-        nn.Linear(feature_dim, out_dim, bias=True)
-    )
-    
-  def forward(self, x):
-    return self.classifier(x)
-    
 
 # Load in MNIST dataset from PyTorch
 train_dataset = MNIST(".", train=True, 
@@ -29,11 +15,10 @@ train_loader = DataLoader(train_dataset,
                           batch_size=64, shuffle=True)
 
 # Instantiate model, optimizer, and hyperparameter(s)
-in_dim, feature_dim, out_dim = 784, 256, 10
 lr=1e-3
 loss_fn = nn.CrossEntropyLoss()
 epochs=40
-classifier = BaseClassifier(in_dim, feature_dim, out_dim)
+classifier = BaseClassifier()
 optimizer = optim.SGD(classifier.parameters(), lr=lr)
 
 def train(classifier=classifier,
@@ -58,12 +43,12 @@ def train(classifier=classifier,
     loss_lt.append(running_loss/len(train_loader))
     print("Epoch: {} train loss: {}".format(epoch+1, running_loss/len(train_loader)))
 
-  plt.plot([i for i in range(1,epochs+1)], loss_lt)
+  '''plt.plot([i for i in range(1,epochs+1)], loss_lt)
   plt.xlabel("Epoch")
   plt.ylabel("Training Loss")
   plt.title(
       "MNIST Training Loss: optimizer {}, lr {}".format("SGD", lr))
-  plt.show()
+  plt.show()'''
 
   # Save state to file as checkpoint
   torch.save(classifier.state_dict(), 'mnist.pt')
