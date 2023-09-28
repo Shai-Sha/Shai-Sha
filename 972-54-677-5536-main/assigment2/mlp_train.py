@@ -7,6 +7,12 @@ from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 from mlp import BaseClassifier
 
+feature_dim=128
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using {device} device")
+
+model=BaseClassifier(feature_dim=feature_dim).to(device)
+print(model)
 
 # Load in MNIST dataset from PyTorch
 train_dataset = MNIST(".", train=True, 
@@ -15,10 +21,10 @@ train_loader = DataLoader(train_dataset,
                           batch_size=64, shuffle=True)
 
 # Instantiate model, optimizer, and hyperparameter(s)
-lr=1e-3
+lr=0.75
 loss_fn = nn.CrossEntropyLoss()
 epochs=40
-classifier = BaseClassifier()
+classifier = BaseClassifier(feature_dim=feature_dim)
 optimizer = optim.SGD(classifier.parameters(), lr=lr)
 
 def train(classifier=classifier,
@@ -42,6 +48,8 @@ def train(classifier=classifier,
       running_loss += computed_loss.item()
     loss_lt.append(running_loss/len(train_loader))
     print("Epoch: {} train loss: {}".format(epoch+1, running_loss/len(train_loader)))
+    if running_loss/len(train_loader)<=0.001:
+      break;
 
   '''plt.plot([i for i in range(1,epochs+1)], loss_lt)
   plt.xlabel("Epoch")
